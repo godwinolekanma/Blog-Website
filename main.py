@@ -261,6 +261,23 @@ def about():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        message = request.form.get('message')
+        connection = smtplib.SMTP('smtp.gmail.com', port=587)
+        connection.starttls()
+        connection.login(user=os.environ.get('EMAIL'), password=os.environ.get('PASSWORD'))
+        connection.sendmail(from_addr=os.environ.get('EMAIL'),
+                            to_addrs=os.environ.get('EMAIL'),
+                            msg=f"Subject: NEW BLOG CONTACT\n\n"
+                                f"Name: {name}\n"
+                                f"Email: {email}\n"
+                                f"Phone: {phone}\n"
+                                f"Message: {message}")
+        flash('Contact details have been Sent')
+        return redirect(url_for('contact'))
     return render_template("contact.html", current_user=current_user)
 
 
